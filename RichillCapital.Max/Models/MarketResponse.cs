@@ -6,6 +6,11 @@ public sealed record MarketResponse
     public string Id { get; init; } = string.Empty;
     public string Name { get; init; } = string.Empty;
 
+    /// <summary>
+    /// suspended: both placing and cancelling orders are forbidden.
+    /// cancel-only: existing orders can be cancelled, but new orders cannot be placed.
+    /// active: both placing and cancelling orders are allowed.
+    /// </summary>
     [JsonProperty("market_status")]
     public string Status { get; init; } = string.Empty;
 

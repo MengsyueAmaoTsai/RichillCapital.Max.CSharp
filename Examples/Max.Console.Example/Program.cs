@@ -7,9 +7,10 @@ MaxDataClient restApi = new();
 
 await restApi.GetServerTimeAsync();
 var markets = await restApi.GetMarketsAsync();
+var currencies = await restApi.GetCurrenciesAsync();
 
 
-foreach (var market in markets)
+foreach (var c in currencies)
 {
-    Console.WriteLine($"{market}");
+    Console.WriteLine($"{c}");
 }
