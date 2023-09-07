@@ -52,6 +52,39 @@ public sealed class MaxDataClient
         await _websocketClient.StopOrFail(WebSocketCloseStatus.NormalClosure, WebSocketCloseStatus.NormalClosure.ToString());
     }
 
+    public void SubscribeMarketStatus()
+    {
+        if (!IsConnected) return;
+
+        var request = new
+        {
+            Id,
+            Action = "sub",
+            Subscriptions = new object[]
+            {
+                new { Channel = "market_status" }
+            },
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
+    }
+
+    public void UnsubscribeMarketStatus()
+    {
+        if (!IsConnected) return;
+
+        var request = new
+        {
+            Id,
+            Action = "unsub",
+            Subscriptions = new object[]
+            {
+                new { Channel = "market_status" }
+            },
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
+    }
+
+
     public async Task<DateTimeOffset> GetServerTimeAsync()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "api/v2/timestamp");
