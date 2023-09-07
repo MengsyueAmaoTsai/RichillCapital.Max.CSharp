@@ -1,19 +1,55 @@
 ﻿
 
+using System.Net.WebSockets;
+using System.Reflection;
+
+using Microsoft.Extensions.Logging;
+
 using RichillCapital.Max.Models;
+
+using Websocket.Client;
 
 namespace RichillCapital.Max;
 
 public sealed class MaxDataClient
 {
-    private readonly HttpClient _httpClient;
+    public string Id { get; private set; }
+    public bool IsConnected { get; private set; } = false;
 
-    public MaxDataClient()
+    private readonly HttpClient _httpClient;
+    private readonly WebsocketClient _websocketClient;
+
+    public MaxDataClient(string clientId = "", int reconnectTimeout = 30)
     {
         _httpClient = new HttpClient
         {
             BaseAddress = new Uri("https://max-api.maicoin.com")
         };
+        _websocketClient = new WebsocketClient(new Uri("wss://max-stream.maicoin.com/ws"))
+        {
+            Name = string.IsNullOrEmpty(clientId) ? clientId : Assembly.GetExecutingAssembly().GetName().Name,
+            IsReconnectionEnabled = true,
+            ReconnectTimeout = TimeSpan.FromSeconds(reconnectTimeout),
+            ErrorReconnectTimeout = TimeSpan.FromSeconds(reconnectTimeout),
+        };
+        Id = clientId;
+    }
+
+    public async Task EstablishConnectionAsync()
+    {
+        if (IsConnected)
+            return;
+        Console.WriteLine($"{Id} Connecting to server...");
+        await _websocketClient.StartOrFail();
+    }
+
+    public async Task CloseConnectionAsync()
+    {
+        if (!IsConnected)
+            return;
+
+        Console.WriteLine($"{Id} Disconnecting from server...");
+        await _websocketClient.StopOrFail(WebSocketCloseStatus.NormalClosure, WebSocketCloseStatus.NormalClosure.ToString());
     }
 
     public async Task<DateTimeOffset> GetServerTimeAsync()
