@@ -10,6 +10,8 @@
         Height="450" 
         Width="800"
         WindowStartupLocation="CenterScreen"
+        Background="#16161e"
+        Foreground="#f8f8f9"
         >
     <Grid>
         <Grid.ColumnDefinitions>
@@ -20,6 +22,7 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
@@ -28,41 +31,56 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         
+        <!--Menu-->
+        <Menu VerticalAlignment="Center" FontSize="15" Margin="5" Background="#16161e" Foreground="#f8f8f9">
+            <MenuItem Header="System">
+                <MenuItem Header="Connect"/>
+            </MenuItem>
+        </Menu>
+        
         <!--Watchlist-->
-        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+        <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
               Background="Black" x:Name="Watchlist"
               >
         </Grid>
         
         <!--Time&Sales-->
-        <Grid Grid.Row="2" Grid.Column="0" Grid.RowSpan="2"
+        <Grid Grid.Row="3" Grid.Column="0" Grid.RowSpan="2"
               Background="Yellow" x:Name="TimeAndSales"
               >
         </Grid>
         
         <!--Orderbook-->
-        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="4"
+        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="4"
               Background="Blue" x:Name="Orderbook"
               >
         </Grid>
         
         <!--Profile-->
-        <Grid Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2"
+        <Grid Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2"
               Background="Green" x:Name="InfoPanel"
               >
             
         </Grid>        
         <!--TradePanel-->
-        <Grid Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2" 
+        <Grid Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2" 
               Background="Red" x:Name="TradingPanel"
               >
         </Grid>
         
         <!--LogConsole-->
-        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5" Grid.RowSpan="2"
-              Background="Purple" x:Name="LogConsole"
-              >
-            
+        <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="5" Grid.RowSpan="2">
+            <DataGrid x:Name="LogConsole" 
+                      Background="#16161e" 
+                      AutoGenerateColumns="False"
+                      ItemsSource="{Binding Logs}"
+                      >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Date Time" Width="auto"/>
+                    <DataGridTextColumn Header="Level" Width="auto"/>
+                    <DataGridTextColumn Header="Message" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
     </Grid>
 </Window>
