@@ -1,7 +1,11 @@
 ﻿
+
 using RichillCapital.Max;
+using RichillCapital.Max.Models;
 
 MaxDataClient dataClient = new();
+dataClient.Pong += HandlePong;
+
 
 Console.WriteLine("|====================================|");
 Console.WriteLine("|    MaxDataClient Console Example   |");
@@ -24,3 +28,9 @@ Console.ReadKey();
 Console.WriteLine("|====================================|");
 Console.WriteLine("|              Stopped               |");
 Console.WriteLine("|====================================|");
+
+
+static void HandlePong(object? sender, PongEvent e)
+{
+    Console.WriteLine($"Pong from server - {e}");
+}

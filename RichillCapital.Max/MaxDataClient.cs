@@ -1,7 +1,12 @@
 
 using System.Net.NetworkInformation;
 using System.Net.WebSockets;
+using System.Reactive.Linq;
 using System.Reflection;
+
+using Newtonsoft.Json.Linq;
+
+using RichillCapital.Max.Models;
 
 using Websocket.Client;
 
@@ -15,6 +20,8 @@ public sealed partial class MaxDataClient
 
     public string Id { get; private set; }
     public bool IsConnected => _websocketClient.IsRunning;
+
+    public event EventHandler<PongEvent>? Pong;
 
     public MaxDataClient(
         string id = "",
@@ -48,6 +55,11 @@ public sealed partial class MaxDataClient
         // Register websocket message handlers
         _websocketClient.ReconnectionHappened.Subscribe(OnReconnectingHappened);
         _websocketClient.DisconnectionHappened.Subscribe(OnDisconnectionHappened);
+        _websocketClient.MessageReceived
+            .Where(message =>
+                !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "pong")
+            .Subscribe(OnPongMessage);
     }
 
     public async Task EstablishConnectionAsync()
@@ -112,9 +124,21 @@ public sealed partial class MaxDataClient
         Console.WriteLine("Ping task started.");
         while (!cancellationToken.IsCancellationRequested)
         {
-            await Task.Delay(5_000);
+            await Task.Delay(5_000, cancellationToken);
             Ping();
         }
         Console.WriteLine($"Ping task stopped.");
+    }
+
+    private void OnPongMessage(ResponseMessage message)
+    {
+        Console.WriteLine($"{message.Text}");
+        if (string.IsNullOrEmpty(message.Text)) return;
+
+        var @event = JsonConvert.DeserializeObject<PongEvent>(message.Text);
+
+        if (@event is null) return;
+
+        Pong?.Invoke(this, @event);
     }
 }
