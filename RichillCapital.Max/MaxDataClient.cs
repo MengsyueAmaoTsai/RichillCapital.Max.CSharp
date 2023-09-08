@@ -324,7 +324,7 @@ public sealed class MaxDataClient
         if (tradeData is null) return;
 
         var marketId = json.SelectToken("M")?.Value<string>() ?? string.Empty;
-
+        var eventTimestamp = json.SelectToken("T")?.Value<long>() ?? 0;
         foreach (var data in tradeData)
         {
             var timestamp = data.SelectToken("T")?.Value<long>() ?? 0;
@@ -334,10 +334,11 @@ public sealed class MaxDataClient
 
             TradeUpdate?.Invoke(this, new TradeUpdatedEvent
             {
+                DateTime = DateTimeOffset.FromUnixTimeMilliseconds(eventTimestamp),
                 MarketId = marketId,
-                DateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp),
-                Price = price,
-                Volume = volume,
+                TradedTime = DateTimeOffset.FromUnixTimeMilliseconds(timestamp),
+                TradedPrice = price,
+                TradedVolume = volume,
                 Trend = trend
             });
         }

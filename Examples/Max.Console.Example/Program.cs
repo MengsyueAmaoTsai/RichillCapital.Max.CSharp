@@ -9,7 +9,6 @@ MaxDataClient client = new();
 
 client.TradeUpdate += TradeUpdate;
 
-void TradeUpdate(object? sender, TradeUpdatedEvent e) => Console.WriteLine($"{e.DateTime} {e.MarketId} {e.Price} {e.Volume}");
 
 await client.EstablishConnectionAsync();
 
@@ -20,3 +19,5 @@ foreach (var market in markets)
 }
 
 Console.ReadLine();
+
+static void TradeUpdate(object? sender, TradeUpdatedEvent e) => Console.WriteLine($"{e.TradedTime} {e.MarketId} {e.TradedPrice} {e.TradedVolume}");

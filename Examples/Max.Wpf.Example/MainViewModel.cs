@@ -44,7 +44,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void _dataClient_TradeUpdate(object? sender, TradeUpdatedEvent e)
     {
-        AddLog(Log.Info($"{e.MarketId} {e.DateTime} {e.Price} {e.Volume}"));
+        AddLog(Log.Info($"{e.MarketId} {e.TradedTime} {e.TradedPrice} {e.TradedVolume}"));
 
         if (SelectedMarket is not null && SelectedMarket.Id == e.MarketId)
         {
