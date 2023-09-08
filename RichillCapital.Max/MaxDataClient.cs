@@ -23,6 +23,8 @@ public sealed partial class MaxDataClient
 
     public event EventHandler<PongEvent>? Pong;
     public event EventHandler<ErrorEvent>? Error;
+    public event EventHandler<SubscribedEvent>? Subscribed;
+    public event EventHandler<UnsubscribedEvent>? Unsubscribed;
 
     public MaxDataClient(
         string id = "",
@@ -56,16 +58,30 @@ public sealed partial class MaxDataClient
         // Register websocket message handlers
         _websocketClient.ReconnectionHappened.Subscribe(OnReconnectingHappened);
         _websocketClient.DisconnectionHappened.Subscribe(OnDisconnectionHappened);
+
         _websocketClient.MessageReceived
             .Where(message =>
                 !string.IsNullOrEmpty(message.Text) &&
                 JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "pong")
             .Subscribe(OnPongMessage);
+
         _websocketClient.MessageReceived
             .Where(message =>
                 !string.IsNullOrEmpty(message.Text) &&
                 JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "error")
             .Subscribe(OnErrorMessage);
+
+        _websocketClient.MessageReceived
+            .Where(message =>
+                !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "subscribed")
+            .Subscribe(OnSubscribed);
+
+        _websocketClient.MessageReceived
+            .Where(message =>
+                !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "unsubscribed")
+            .Subscribe(OnUnsubscribed);
     }
 
     public async Task EstablishConnectionAsync()
@@ -156,5 +172,15 @@ public sealed partial class MaxDataClient
         if (@event is null) return;
 
         Error?.Invoke(this, @event);
+    }
+
+    private void OnSubscribed(ResponseMessage message)
+    {
+        // TODO:
+    }
+
+    private void OnUnsubscribed(ResponseMessage message)
+    {
+        // TODO:
     }
 }
