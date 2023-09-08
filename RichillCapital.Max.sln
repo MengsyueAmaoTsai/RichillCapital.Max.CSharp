@@ -5,7 +5,9 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RichillCapital.Max", "RichillCapital.Max.csproj", "{07349CD2-26CC-4541-9402-791D4C8DED00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Max.Console.Example", "Examples\Max.Console.Example\Max.Console.Example.csproj", "{3422883D-4C77-4852-9064-3E04B890BCAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Max.Console.Example", "Examples\Max.Console.Example\Max.Console.Example.csproj", "{3422883D-4C77-4852-9064-3E04B890BCAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichillCapital.Max.Tests", "Tests\RichillCapital.Max.Tests\RichillCapital.Max.Tests.csproj", "{F44AC60A-F9F2-4A1A-BD10-D7C4A8935019}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{3422883D-4C77-4852-9064-3E04B890BCAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3422883D-4C77-4852-9064-3E04B890BCAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3422883D-4C77-4852-9064-3E04B890BCAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F44AC60A-F9F2-4A1A-BD10-D7C4A8935019}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F44AC60A-F9F2-4A1A-BD10-D7C4A8935019}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F44AC60A-F9F2-4A1A-BD10-D7C4A8935019}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F44AC60A-F9F2-4A1A-BD10-D7C4A8935019}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
