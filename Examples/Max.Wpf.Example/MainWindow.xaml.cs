@@ -12,6 +12,13 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = _viewModel = viewModel;
+        SetWindowSizeToPercentageOfScreen(80);
+    }
+
+    private void SetWindowSizeToPercentageOfScreen(double percentage)
+    {
+        Width = SystemParameters.PrimaryScreenWidth * (percentage * 0.01);
+        Height = SystemParameters.PrimaryScreenHeight * (percentage * 0.01);
     }
 
     private void LogConsole_LayoutUpdated(object sender, EventArgs e)
@@ -20,7 +27,7 @@ public partial class MainWindow : Window
         if (!_viewModel.ShouldAutoScroll || !items.Any())
             return;
 
-        LogConsole.ScrollIntoView(items[^1]);
+        //LogConsole.ScrollIntoView(items[^1]);
         _viewModel.ShouldAutoScroll = false;
     }
 }
