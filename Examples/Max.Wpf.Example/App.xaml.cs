@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using RichillCapital.Max;
+
 
 namespace Max.Wpf.Example;
 
@@ -30,6 +32,7 @@ public partial class App : Application
     {
         IServiceCollection services = new ServiceCollection();
         services
+            .AddSingleton<MaxDataClient>()
             .AddSingleton<WeakReferenceMessenger>()
             .AddSingleton<IMessenger, WeakReferenceMessenger>(provider =>
                 provider.GetRequiredService<WeakReferenceMessenger>())

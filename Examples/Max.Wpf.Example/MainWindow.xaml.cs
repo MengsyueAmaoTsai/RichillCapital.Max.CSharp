@@ -11,12 +11,12 @@ public partial class MainWindow : Window
     public MainWindow(MainViewModel viewModel)
     {
         InitializeComponent();
-        DataContext = _viewModel=viewModel;
+        DataContext = _viewModel = viewModel;
     }
     private void LogConsole_LayoutUpdated(object sender, EventArgs e)
     {
         var items = _viewModel.Logs;
-        if (!_viewModel.ShouldAutoScroll || !items.Any()) 
+        if (!_viewModel.ShouldAutoScroll || !items.Any())
             return;
 
         LogConsole.ScrollIntoView(items[items.Count - 1]);

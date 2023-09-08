@@ -10,7 +10,6 @@ using CommunityToolkit.Mvvm.Input;
 using Max.Wpf.Example.Models;
 
 using RichillCapital.Max;
-using RichillCapital.Max.Events;
 using RichillCapital.Max.Models;
 
 namespace Max.Wpf.Example;
@@ -30,10 +29,7 @@ public sealed partial class MainViewModel : ObservableObject
     public MainViewModel(MaxDataClient dataClient)
     {
         _dataClient = dataClient;
-        _dataClient.Connected += _dataClient_Connected;
-        _dataClient.TickerUpdate += _dataClient_TickerUpdate;
-        _dataClient.TradeUpdate += _dataClient_TradeUpdate;
-        
+
         Logs = new();
         BindingOperations.EnableCollectionSynchronization(Logs, new());
         Markets = new();
@@ -42,27 +38,6 @@ public sealed partial class MainViewModel : ObservableObject
         BindingOperations.EnableCollectionSynchronization(Trades, new());
     }
 
-    private void _dataClient_TradeUpdate(object? sender, TradeUpdatedEvent e)
-    {
-        AddLog(Log.Info($"{e.MarketId} {e.TradedTime} {e.TradedPrice} {e.TradedVolume}"));
-
-        if (SelectedMarket is not null && SelectedMarket.Id == e.MarketId)
-        {
-            //AddLog(Log.Info($"{e.MarketId} {e.DateTime}"));
-        }
-    }
-
-    private void _dataClient_TickerUpdate(object? sender, EventArgs e)
-    {
-        throw new NotImplementedException();
-    }
-
-    private async void _dataClient_Connected(object? sender, EventArgs e)
-    {
-        AddLog(Log.Info("Connected."));
-        await LoadMarketsAsync();
-        SubscribeTrades();
-    }
 
     [RelayCommand(CanExecute = nameof(CanEstablishConnection))]
     public async Task EstablishConnectionAsync()
