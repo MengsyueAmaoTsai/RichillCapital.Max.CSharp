@@ -1,6 +1,5 @@
 ﻿using System.Net.WebSockets;
 using System.Reactive.Linq;
-using System.Reflection;
 
 using Newtonsoft.Json.Linq;
 
@@ -11,7 +10,7 @@ using Websocket.Client;
 
 namespace RichillCapital.Max;
 
-public sealed class MaxDataClient
+public sealed partial class MaxDataClient
 {
     private readonly HttpClient _httpClient;
     private readonly WebsocketClient _websocketClient;
@@ -19,26 +18,23 @@ public sealed class MaxDataClient
     public string Id { get; private set; }
     public bool IsConnected { get; private set; } = false;
 
-    public event EventHandler? Connected;
-    public event EventHandler? Disconnect;
-    public event EventHandler? MarketStatusUpdate;
-    public event EventHandler? MarketStatusSnapshot;
-    public event EventHandler<TradeUpdatedEvent>? TradeUpdate;
-    public event EventHandler? TradeSnapshot;
-    public event EventHandler? TickerUpdate;
-    public event EventHandler? TickerSnapshot;
-    public event EventHandler? KLineUpdate;
-    public event EventHandler? KLineSnapshot;
-    public event EventHandler? OrderbookUpdate;
-    public event EventHandler? OrderbookSnapshot;
-
-    public MaxDataClient(string clientId = "", int reconnectTimeout = 30)
+    public MaxDataClient(string clientId = "", int reconnectTimeout = 30, int keepAliveInterval = 30)
     {
         _httpClient = new HttpClient
         {
             BaseAddress = new Uri("https://max-api.maicoin.com")
         };
-        _websocketClient = new WebsocketClient(new Uri("wss://max-stream.maicoin.com/ws"))
+
+        var websocketFactory = new Func<ClientWebSocket>(() =>
+        {
+            var client = new ClientWebSocket
+            {
+                Options = { KeepAliveInterval = TimeSpan.FromSeconds(keepAliveInterval) }
+            };
+            return client;
+        });
+
+        _websocketClient = new WebsocketClient(new Uri("wss://max-stream.maicoin.com/ws"), websocketFactory)
         {
             Name = string.IsNullOrEmpty(clientId) ? typeof(MaxDataClient).Assembly.GetName().Name : clientId,
             IsReconnectionEnabled = true,
@@ -53,9 +49,12 @@ public sealed class MaxDataClient
     {
         if (IsConnected)
             return;
-        SubscribeWebsocketEvents();
-        Console.WriteLine($"{Id} Connecting to server...");
 
+        DateTimeOffset serverTime = await GetServerTimeAsync();
+        // TODO: If cant't get server time.        
+        SubscribeWebsocketEvents();
+        // TODO: Logging message. 
+        Console.WriteLine($"{Id} Connecting to server...");
         await _websocketClient.StartOrFail();
     }
 
@@ -66,6 +65,8 @@ public sealed class MaxDataClient
 
         Console.WriteLine($"{Id} Disconnecting from server...");
         await _websocketClient.StopOrFail(WebSocketCloseStatus.NormalClosure, WebSocketCloseStatus.NormalClosure.ToString());
+
+        // TODO: Unsubscribe events.
     }
 
     public void Ping()
