@@ -1,7 +1,4 @@
-﻿
-
-
-using RichillCapital.Max;
+﻿using RichillCapital.Max;
 using RichillCapital.Max.Events;
 
 MaxDataClient dataClient = new();
@@ -9,6 +6,9 @@ dataClient.Pong += HandlePong;
 dataClient.Error += HandleError;
 
 dataClient.MarketStatusSnapshot += HandleMarketStatusSnapshot;
+dataClient.MarketStatusUpdated += HandleMarketStatusUpdated;
+dataClient.TradeSnapshot += HandleTradeSnapshot;
+dataClient.TradeUpdated += HandleTradeUpdated;
 
 
 Console.WriteLine("|====================================|");
@@ -16,22 +16,32 @@ Console.WriteLine("|    MaxDataClient Console Example   |");
 Console.WriteLine("|====================================|");
 Console.WriteLine();
 
-
-
 Console.WriteLine("|====================================|");
 Console.WriteLine("|              Starting              |");
 Console.WriteLine("|====================================|");
 Console.WriteLine();
 
+var testSymbols = new string[] { "btctwd", "usdttwd", "ethtwd" };
+
 await dataClient.EstablishConnectionAsync();
 
 await Task.Delay(2000);
+
 // dataClient.SubscribeMarketStatus();
+
+foreach (var symbol in testSymbols)
+{
+    // dataClient.SubscribeTrade(symbol);
+}
 
 await Task.Delay(2000);
 // dataClient.UnsubscribeMarketStatus();
 // await dataClient.CloseConnectionAsync();
 
+foreach (var symbol in testSymbols)
+{
+    // dataClient.UnsubscribeTrade(symbol);
+}
 
 Console.ReadKey();
 Console.WriteLine("|====================================|");
@@ -44,3 +54,6 @@ static void HandleError(object? sender, ErrorEvent e) => Console.WriteLine($"Err
 
 
 static void HandleMarketStatusSnapshot(object? sender, MarketStatusEvent e) => Console.WriteLine($"Market snapshot => {e}");
+static void HandleMarketStatusUpdated(object? sender, MarketStatusEvent e) => Console.WriteLine($"Market updated => {e}");
+static void HandleTradeSnapshot(object? sender, TradeEvent e) => Console.WriteLine($"Trade snapshot => {e}");
+static void HandleTradeUpdated(object? sender, TradeEvent e) => Console.WriteLine($"Trade updated => {e}");

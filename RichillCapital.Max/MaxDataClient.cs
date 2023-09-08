@@ -26,8 +26,10 @@ public sealed partial class MaxDataClient
     public event EventHandler<SubscribedEvent>? Subscribed;
     public event EventHandler<UnsubscribedEvent>? Unsubscribed;
 
-    public event EventHandler<MarketStatusEvent>? MarketStatusUpdate;
+    public event EventHandler<MarketStatusEvent>? MarketStatusUpdated;
     public event EventHandler<MarketStatusEvent>? MarketStatusSnapshot;
+    public event EventHandler<TradeEvent>? TradeUpdated;
+    public event EventHandler<TradeEvent>? TradeSnapshot;
 
     public MaxDataClient(
         string id = "",
@@ -99,6 +101,20 @@ public sealed partial class MaxDataClient
                 JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "update" &&
                 JObject.Parse(message.Text)?.SelectToken("c")?.Value<string>() == "market_status")
             .Subscribe(OnMarketStatusUpdate);
+
+        _websocketClient.MessageReceived
+            .Where(message =>
+                !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "snapshot" &&
+                JObject.Parse(message.Text)?.SelectToken("c")?.Value<string>() == "trade")
+            .Subscribe(OnTradeSnapshot);
+
+        _websocketClient.MessageReceived
+            .Where(message =>
+                !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "update" &&
+                JObject.Parse(message.Text)?.SelectToken("c")?.Value<string>() == "trade")
+            .Subscribe(OnTradeUpdate);
     }
 
     public async Task EstablishConnectionAsync()
@@ -165,6 +181,35 @@ public sealed partial class MaxDataClient
         };
         _websocketClient.Send(JsonConvert.SerializeObject(request));
     }
+
+    public void SubscribeTrade(string marketId)
+    {
+        var request = new
+        {
+            Id,
+            Action = "sub",
+            Subscriptions = new object[]
+            {
+                new { Channel = "trade", Market = marketId }
+            },
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
+    }
+
+    public void UnsubscribeTrade(string marketId)
+    {
+        var request = new
+        {
+            Id,
+            Action = "unsub",
+            Subscriptions = new object[]
+            {
+                new { Channel = "trade", Market = marketId }
+            },
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
+    }
+
 
     private void OnReconnectingHappened(ReconnectionInfo info)
     {
@@ -238,6 +283,22 @@ public sealed partial class MaxDataClient
         if (string.IsNullOrEmpty(message.Text)) return;
         var @event = JsonConvert.DeserializeObject<MarketStatusEvent>(message.Text);
         if (@event is null) return;
-        MarketStatusUpdate?.Invoke(this, @event);
+        MarketStatusUpdated?.Invoke(this, @event);
+    }
+
+    private void OnTradeUpdate(ResponseMessage message)
+    {
+        if (string.IsNullOrEmpty(message.Text)) return;
+        var @event = JsonConvert.DeserializeObject<TradeEvent>(message.Text);
+        if (@event is null) return;
+        TradeUpdated?.Invoke(this, @event);
+    }
+
+    private void OnTradeSnapshot(ResponseMessage message)
+    {
+        if (string.IsNullOrEmpty(message.Text)) return;
+        var @event = JsonConvert.DeserializeObject<TradeEvent>(message.Text);
+        if (@event is null) return;
+        TradeSnapshot?.Invoke(this, @event);
     }
 }
