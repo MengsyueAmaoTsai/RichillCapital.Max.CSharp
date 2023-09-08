@@ -30,7 +30,8 @@ Console.WriteLine();
 var testSymbols = new string[] { "btctwd", "usdttwd", "ethtwd" };
 
 await dataClient.EstablishConnectionAsync();
-
+await dataClient.GetServerTimeAsync();
+await dataClient.GetMarketsAsync();
 await Task.Delay(2000);
 
 // dataClient.SubscribeMarketStatus();

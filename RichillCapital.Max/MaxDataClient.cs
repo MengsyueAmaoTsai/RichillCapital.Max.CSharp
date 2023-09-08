@@ -194,7 +194,7 @@ public sealed partial class MaxDataClient
 
     public async Task<IReadOnlyCollection<MarketResponse>> GetMarketsAsync()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/api/v2/timestamp");
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/v2/markets");
         var response = await _httpClient.SendAsync(request);
         var content = await response.Content.ReadAsStringAsync();
         var markets = JsonConvert.DeserializeObject<IEnumerable<MarketResponse>>(content) ?? new List<MarketResponse>();
