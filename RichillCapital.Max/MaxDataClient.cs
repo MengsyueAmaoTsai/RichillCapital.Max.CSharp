@@ -34,6 +34,8 @@ public sealed partial class MaxDataClient
     public event EventHandler<TickerEvent>? TickerSnapshot;
     public event EventHandler<KLineEvent>? KLineUpdated;
     public event EventHandler<KLineEvent>? KLineSnapshot;
+    public event EventHandler<OrderbookEvent>? OrderbookUpdated;
+    public event EventHandler<OrderbookEvent>? OrderbookSnapshot;
 
     public MaxDataClient(
         string id = "",
@@ -147,6 +149,20 @@ public sealed partial class MaxDataClient
                 JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "update" &&
                 JObject.Parse(message.Text)?.SelectToken("c")?.Value<string>() == "kline")
             .Subscribe(OnKLineUpdate);
+
+        _websocketClient.MessageReceived
+            .Where(message =>
+                !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "snapshot" &&
+                JObject.Parse(message.Text)?.SelectToken("c")?.Value<string>() == "book")
+            .Subscribe(OnOrderbookSnapshot);
+
+        _websocketClient.MessageReceived
+            .Where(message =>
+                !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "update" &&
+                JObject.Parse(message.Text)?.SelectToken("c")?.Value<string>() == "book")
+            .Subscribe(OnOrderbookUpdate);
     }
 
     public async Task EstablishConnectionAsync()
@@ -298,6 +314,34 @@ public sealed partial class MaxDataClient
         _websocketClient.Send(JsonConvert.SerializeObject(request));
     }
 
+    public void SubscribeOrderbook(string marketId, int depth = 10)
+    {
+        var request = new
+        {
+            Id,
+            Action = "sub",
+            Subscriptions = new object[]
+            {
+                new { Channel = "book", Market = marketId, Depth = depth }
+            },
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
+    }
+
+    public void UnsubscribeOrderbook(string marketId, int depth = 10)
+    {
+        var request = new
+        {
+            Id,
+            Action = "unsub",
+            Subscriptions = new object[]
+            {
+                new { Channel = "book", Market = marketId, Depth = depth }
+            },
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
+    }
+
     private void OnReconnectingHappened(ReconnectionInfo info)
     {
         Console.WriteLine($"Reconnection happened, type: {info.Type}, url: {_websocketClient.Url}");
@@ -419,5 +463,21 @@ public sealed partial class MaxDataClient
         var @event = JsonConvert.DeserializeObject<KLineEvent>(message.Text);
         if (@event is null) return;
         KLineSnapshot?.Invoke(this, @event);
+    }
+
+    private void OnOrderbookSnapshot(ResponseMessage message)
+    {
+        if (string.IsNullOrEmpty(message.Text)) return;
+        var @event = JsonConvert.DeserializeObject<OrderbookEvent>(message.Text);
+        if (@event is null) return;
+        OrderbookSnapshot?.Invoke(this, @event);
+    }
+
+    private void OnOrderbookUpdate(ResponseMessage message)
+    {
+        if (string.IsNullOrEmpty(message.Text)) return;
+        var @event = JsonConvert.DeserializeObject<OrderbookEvent>(message.Text);
+        if (@event is null) return;
+        OrderbookUpdated?.Invoke(this, @event);
     }
 }
