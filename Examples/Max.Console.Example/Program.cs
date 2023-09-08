@@ -11,8 +11,8 @@ dataClient.TradeSnapshot += HandleTradeSnapshot;
 dataClient.TradeUpdated += HandleTradeUpdated;
 dataClient.TickerSnapshot += HandleTickerSnapshot;
 dataClient.TickerUpdated += HandleTickerUpdated;
-
-
+dataClient.KLineSnapshot += HandleKLineSnapshot;
+dataClient.KLineUpdated += HandleKLineUpdated;
 
 Console.WriteLine("|====================================|");
 Console.WriteLine("|    MaxDataClient Console Example   |");
@@ -36,6 +36,7 @@ foreach (var symbol in testSymbols)
 {
     // dataClient.SubscribeTrade(symbol);
     // dataClient.SubscribeTicker(symbol);
+    dataClient.SubscribeKLine(symbol);
 }
 
 await Task.Delay(2000);
@@ -46,6 +47,7 @@ foreach (var symbol in testSymbols)
 {
     // dataClient.UnsubscribeTrade(symbol);
     // dataClient.UnsubscribeTicker(symbol);
+    // dataClient.UnsubscribeKLine(symbol);
 }
 
 Console.ReadKey();
@@ -62,6 +64,7 @@ static void HandleMarketStatusSnapshot(object? sender, MarketStatusEvent e) => C
 static void HandleMarketStatusUpdated(object? sender, MarketStatusEvent e) => Console.WriteLine($"Market updated => {e}");
 static void HandleTradeSnapshot(object? sender, TradeEvent e) => Console.WriteLine($"Trade snapshot => {e}");
 static void HandleTradeUpdated(object? sender, TradeEvent e) => Console.WriteLine($"Trade updated => {e}");
-
 static void HandleTickerSnapshot(object? sender, TickerEvent e) => Console.WriteLine($"Ticker snapshot => {e}");
 static void HandleTickerUpdated(object? sender, TickerEvent e) => Console.WriteLine($"Ticker update => {e}");
+static void HandleKLineUpdated(object? sender, KLineEvent e) => Console.WriteLine($"KLine update => {e}");
+static void HandleKLineSnapshot(object? sender, KLineEvent e) => Console.WriteLine($"KLine snapshot => {e}");

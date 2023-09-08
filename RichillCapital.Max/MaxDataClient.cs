@@ -32,6 +32,8 @@ public sealed partial class MaxDataClient
     public event EventHandler<TradeEvent>? TradeSnapshot;
     public event EventHandler<TickerEvent>? TickerUpdated;
     public event EventHandler<TickerEvent>? TickerSnapshot;
+    public event EventHandler<KLineEvent>? KLineUpdated;
+    public event EventHandler<KLineEvent>? KLineSnapshot;
 
     public MaxDataClient(
         string id = "",
@@ -131,6 +133,20 @@ public sealed partial class MaxDataClient
                 JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "update" &&
                 JObject.Parse(message.Text)?.SelectToken("c")?.Value<string>() == "ticker")
             .Subscribe(OnTickerUpdate);
+
+        _websocketClient.MessageReceived
+            .Where(message =>
+                !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "snapshot" &&
+                JObject.Parse(message.Text)?.SelectToken("c")?.Value<string>() == "kline")
+            .Subscribe(OnKLineSnapshot);
+
+        _websocketClient.MessageReceived
+            .Where(message =>
+                !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "update" &&
+                JObject.Parse(message.Text)?.SelectToken("c")?.Value<string>() == "kline")
+            .Subscribe(OnKLineUpdate);
     }
 
     public async Task EstablishConnectionAsync()
@@ -254,6 +270,34 @@ public sealed partial class MaxDataClient
         _websocketClient.Send(JsonConvert.SerializeObject(request));
     }
 
+    public void SubscribeKLine(string marketId, string resolution = "1m")
+    {
+        var request = new
+        {
+            Id,
+            Action = "sub",
+            Subscriptions = new object[]
+            {
+                new { Channel = "kline", Market = marketId, Resolution = resolution }
+            },
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
+    }
+
+    public void UnsubscribeKLine(string marketId, string resolution = "1m")
+    {
+        var request = new
+        {
+            Id,
+            Action = "unsub",
+            Subscriptions = new object[]
+            {
+                new { Channel = "kline", Market = marketId, Resolution = resolution }
+            },
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
+    }
+
     private void OnReconnectingHappened(ReconnectionInfo info)
     {
         Console.WriteLine($"Reconnection happened, type: {info.Type}, url: {_websocketClient.Url}");
@@ -359,5 +403,21 @@ public sealed partial class MaxDataClient
         var @event = JsonConvert.DeserializeObject<TickerEvent>(message.Text);
         if (@event is null) return;
         TickerSnapshot?.Invoke(this, @event);
+    }
+
+    private void OnKLineUpdate(ResponseMessage message)
+    {
+        if (string.IsNullOrEmpty(message.Text)) return;
+        var @event = JsonConvert.DeserializeObject<KLineEvent>(message.Text);
+        if (@event is null) return;
+        KLineUpdated?.Invoke(this, @event);
+    }
+
+    private void OnKLineSnapshot(ResponseMessage message)
+    {
+        if (string.IsNullOrEmpty(message.Text)) return;
+        var @event = JsonConvert.DeserializeObject<KLineEvent>(message.Text);
+        if (@event is null) return;
+        KLineSnapshot?.Invoke(this, @event);
     }
 }
