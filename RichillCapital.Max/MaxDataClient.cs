@@ -1,9 +1,8 @@
-﻿
-
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
+using System.Reactive.Linq;
 using System.Reflection;
 
-using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 using RichillCapital.Max.Models;
 
@@ -40,7 +39,9 @@ public sealed class MaxDataClient
     {
         if (IsConnected)
             return;
+        SubscribeWebsocketEvents();
         Console.WriteLine($"{Id} Connecting to server...");
+
         await _websocketClient.StartOrFail();
     }
 
@@ -55,6 +56,8 @@ public sealed class MaxDataClient
 
     public void Ping()
     {
+        if (!IsConnected) return;
+
         var request = new
         {
             Id,
@@ -95,7 +98,6 @@ public sealed class MaxDataClient
         _websocketClient.Send(JsonConvert.SerializeObject(request));
     }
 
-
     public async Task<DateTimeOffset> GetServerTimeAsync()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "api/v2/timestamp");
@@ -126,5 +128,90 @@ public sealed class MaxDataClient
         var markets = JsonConvert.DeserializeObject<IEnumerable<CurrencyResponse>>(content)
             ?? Array.Empty<CurrencyResponse>();
         return markets.ToArray().AsReadOnly();
+    }
+
+    private void SubscribeWebsocketEvents()
+    {
+        _websocketClient.ReconnectionHappened.Subscribe(info =>
+        {
+            switch (info.Type)
+            {
+                case ReconnectionType.Initial:
+                    IsConnected = true;
+                    break;
+
+                case ReconnectionType.NoMessageReceived:
+                    Console.WriteLine($"Reconnection because no message received");
+                    break;
+
+                case ReconnectionType.ByUser:
+                    Console.WriteLine($"Reconnection by user");
+                    break;
+
+                case ReconnectionType.ByServer:
+                    Console.WriteLine($"Reconnection by server");
+                    break;
+
+                case ReconnectionType.Error:
+                    Console.WriteLine($"Reconnection because error");
+                    break;
+
+                case ReconnectionType.Lost:
+                    Console.WriteLine($"Reconnection because connection lost.");
+                    break;
+
+                default:
+                    break;
+            }
+        });
+
+        _websocketClient.DisconnectionHappened.Subscribe(info =>
+        {
+            switch (info.Type)
+            {
+                case DisconnectionType.Exit:
+                    Console.WriteLine($"Disconnect by disposed.");
+                    break;
+                case DisconnectionType.Lost:
+                    Console.WriteLine($"Disconnect => connection lost.");
+                    break;
+                case DisconnectionType.NoMessageReceived:
+                    Console.WriteLine($"Disconnect no message received");
+                    break;
+                case DisconnectionType.Error:
+                    Console.WriteLine($"Disconnect by Error ");
+                    break;
+                case DisconnectionType.ByUser:
+                    Console.WriteLine($"Disconnect by user ");
+                    break;
+                case DisconnectionType.ByServer:
+                    Console.WriteLine($"Disconnect by SERVER");
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        // Subscribe market status snapshot.
+        _websocketClient.MessageReceived
+            .Where(message => !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "snapshot" &&
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "market_status")
+            .Subscribe(message => Console.WriteLine($"MarketStatusSnapshot => {message.Text}"));
+
+        _websocketClient.MessageReceived
+            .Where(message => !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "update" &&
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "market_status")
+            .Subscribe(message => Console.WriteLine($"MarketStatus update => {message.Text}"));
+
+    }
+
+    private string GenerateSignature(long nonce)
+    {
+        // using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_secretKey));
+        // var signatureBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes($"{nonce}"));
+        // return BitConverter.ToString(signatureBytes).Replace("-", "").ToLowerInvariant();
+        throw new NotImplementedException();
     }
 }
