@@ -9,6 +9,9 @@ dataClient.MarketStatusSnapshot += HandleMarketStatusSnapshot;
 dataClient.MarketStatusUpdated += HandleMarketStatusUpdated;
 dataClient.TradeSnapshot += HandleTradeSnapshot;
 dataClient.TradeUpdated += HandleTradeUpdated;
+dataClient.TickerSnapshot += HandleTickerSnapshot;
+dataClient.TickerUpdated += HandleTickerUpdated;
+
 
 
 Console.WriteLine("|====================================|");
@@ -32,6 +35,7 @@ await Task.Delay(2000);
 foreach (var symbol in testSymbols)
 {
     // dataClient.SubscribeTrade(symbol);
+    // dataClient.SubscribeTicker(symbol);
 }
 
 await Task.Delay(2000);
@@ -41,6 +45,7 @@ await Task.Delay(2000);
 foreach (var symbol in testSymbols)
 {
     // dataClient.UnsubscribeTrade(symbol);
+    // dataClient.UnsubscribeTicker(symbol);
 }
 
 Console.ReadKey();
@@ -57,3 +62,6 @@ static void HandleMarketStatusSnapshot(object? sender, MarketStatusEvent e) => C
 static void HandleMarketStatusUpdated(object? sender, MarketStatusEvent e) => Console.WriteLine($"Market updated => {e}");
 static void HandleTradeSnapshot(object? sender, TradeEvent e) => Console.WriteLine($"Trade snapshot => {e}");
 static void HandleTradeUpdated(object? sender, TradeEvent e) => Console.WriteLine($"Trade updated => {e}");
+
+static void HandleTickerSnapshot(object? sender, TickerEvent e) => Console.WriteLine($"Ticker snapshot => {e}");
+static void HandleTickerUpdated(object? sender, TickerEvent e) => Console.WriteLine($"Ticker update => {e}");
