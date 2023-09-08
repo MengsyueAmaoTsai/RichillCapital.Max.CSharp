@@ -1,28 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace Max.Wpf.Example
+namespace Max.Wpf.Example;
+
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    private readonly MainViewModel _viewModel;
+    public MainWindow(MainViewModel viewModel)
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        DataContext = _viewModel=viewModel;
+    }
+    private void LogConsole_LayoutUpdated(object sender, EventArgs e)
+    {
+        var items = _viewModel.Logs;
+        if (!_viewModel.ShouldAutoScroll || !items.Any()) 
+            return;
+
+        LogConsole.ScrollIntoView(items[items.Count - 1]);
+        _viewModel.ShouldAutoScroll = false;
     }
 }

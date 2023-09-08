@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RichillCapital.Max.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Max.Wpf.Example", "Examples\Max.Wpf.Example\Max.Wpf.Example.csproj", "{4352EFFC-D0FE-4F6D-B60A-8CF304D120C0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{A05717D5-DAFF-4E4C-BE92-3055409754F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3422883D-4C77-4852-9064-3E04B890BCAF} = {A05717D5-DAFF-4E4C-BE92-3055409754F5}
+		{4352EFFC-D0FE-4F6D-B60A-8CF304D120C0} = {A05717D5-DAFF-4E4C-BE92-3055409754F5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3AF08732-CB90-48A2-9CF0-D3188E87959B}
