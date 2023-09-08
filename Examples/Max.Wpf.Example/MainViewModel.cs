@@ -21,9 +21,17 @@ public sealed partial class MainViewModel : ObservableObject
     public MainViewModel(MaxDataClient dataClient)
     {
         _dataClient = dataClient;
+        _dataClient.Connected += _dataClient_Connected;
         
         Logs = new();
         BindingOperations.EnableCollectionSynchronization(Logs, new());
+    }
+
+    private async void _dataClient_Connected(object? sender, EventArgs e)
+    {
+        AddLog(Log.Info("Connected."));
+        var markets = await _dataClient.GetMarketsAsync();
+        AddLog(Log.Info($"Total markets: {markets.Count}"));
     }
 
     [RelayCommand(CanExecute = nameof(CanEstablishConnection))]
