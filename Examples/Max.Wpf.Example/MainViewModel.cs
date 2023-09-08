@@ -7,7 +7,10 @@ using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using Max.Wpf.Example.Models;
+
 using RichillCapital.Max;
+using RichillCapital.Max.Events;
 using RichillCapital.Max.Models;
 
 namespace Max.Wpf.Example;
@@ -39,9 +42,9 @@ public sealed partial class MainViewModel : ObservableObject
         BindingOperations.EnableCollectionSynchronization(Trades, new());
     }
 
-    private void _dataClient_TradeUpdate(object? sender, EventArgs e)
+    private void _dataClient_TradeUpdate(object? sender, TradeUpdatedEvent e)
     {
-        throw new NotImplementedException();
+        AddLog(Log.Info($"{e.MarketId} {e.DateTime}"));
     }
 
     private void _dataClient_TickerUpdate(object? sender, EventArgs e)
@@ -52,15 +55,8 @@ public sealed partial class MainViewModel : ObservableObject
     private async void _dataClient_Connected(object? sender, EventArgs e)
     {
         AddLog(Log.Info("Connected."));
-
-        Markets.Clear();
-        var markets = await _dataClient.GetMarketsAsync();
-        foreach (var market in markets)
-        {
-            Markets.Add(market);
-        }
-        
-        AddLog(Log.Info($"Total markets: {markets.Count}"));
+        await LoadMarketsAsync();
+        SubscribeTrades();
     }
 
     [RelayCommand(CanExecute = nameof(CanEstablishConnection))]
@@ -83,5 +79,25 @@ public sealed partial class MainViewModel : ObservableObject
     {
         Logs.Add(log);
         ShouldAutoScroll = true;
+    }
+
+    private async Task LoadMarketsAsync()
+    {
+        Markets.Clear();
+        var markets = await _dataClient.GetMarketsAsync();
+        foreach (var market in markets)
+        {
+            Markets.Add(market);
+        }
+        AddLog(Log.Info($"Markets loaded. Total markets: {markets.Count}"));
+    }
+
+    private void SubscribeTrades()
+    {
+        foreach (var market in Markets)
+        {
+            _dataClient.SubscribeTrade(market.Id);
+            AddLog(Log.Info($"Subscribe to market {market.Id}"));
+        }
     }
 }

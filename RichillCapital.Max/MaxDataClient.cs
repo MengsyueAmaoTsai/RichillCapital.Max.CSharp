@@ -4,6 +4,7 @@ using System.Reflection;
 
 using Newtonsoft.Json.Linq;
 
+using RichillCapital.Max.Events;
 using RichillCapital.Max.Models;
 
 using Websocket.Client;
@@ -22,7 +23,7 @@ public sealed class MaxDataClient
     public event EventHandler? Disconnect;
     public event EventHandler? MarketStatusUpdate;
     public event EventHandler? MarketStatusSnapshot;
-    public event EventHandler? TradeUpdate;
+    public event EventHandler<TradeUpdatedEvent>? TradeUpdate;
     public event EventHandler? TradeSnapshot;
     public event EventHandler? TickerUpdate;
     public event EventHandler? TickerSnapshot;
@@ -262,7 +263,12 @@ public sealed class MaxDataClient
             .Where(message => !string.IsNullOrEmpty(message.Text) &&
                 JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "trade" &&
                 JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "update")
-            .Subscribe(message => Console.WriteLine($"Trade update => {message.Text}"));
+            .Subscribe(message =>
+            {
+                TradeUpdate?.Invoke(this, new TradeUpdatedEvent
+                {
+                });
+            });
 
     }
 
