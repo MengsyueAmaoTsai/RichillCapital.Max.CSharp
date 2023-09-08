@@ -23,8 +23,8 @@ public partial class App : Application
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         base.OnStartup(e);
-        var loginWindow = Services.GetRequiredService<MainWindow>();
-        loginWindow.Show();
+        var window = Services.GetRequiredService<MainWindow>();
+        window.Show();
     }
 
     private static IServiceProvider ConfigureServices()
