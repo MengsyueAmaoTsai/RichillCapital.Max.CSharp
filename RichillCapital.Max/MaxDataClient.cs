@@ -263,12 +263,7 @@ public sealed class MaxDataClient
             .Where(message => !string.IsNullOrEmpty(message.Text) &&
                 JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "trade" &&
                 JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "update")
-            .Subscribe(message =>
-            {
-                TradeUpdate?.Invoke(this, new TradeUpdatedEvent
-                {
-                });
-            });
+            .Subscribe(HandleTradeUpdateMessage);
 
     }
 
@@ -278,5 +273,34 @@ public sealed class MaxDataClient
         // var signatureBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes($"{nonce}"));
         // return BitConverter.ToString(signatureBytes).Replace("-", "").ToLowerInvariant();
         throw new NotImplementedException();
+    }
+
+    private void HandleTradeUpdateMessage(ResponseMessage message)
+    {
+        if (string.IsNullOrEmpty(message.Text))
+            return;
+
+        var json = JObject.Parse(message.Text);
+        var tradeData = json.SelectToken("t")?.Value<JArray>();
+        if (tradeData is null) return;
+
+        var marketId = json.SelectToken("M")?.Value<string>() ?? string.Empty;
+
+        foreach (var data in tradeData)
+        {
+            var timestamp = data.SelectToken("T")?.Value<long>() ?? 0;
+            var price = data.SelectToken("p")?.Value<decimal>() ?? 0;
+            var volume = data.SelectToken("v")?.Value<decimal>() ?? 0;
+            var trend = data.SelectToken("tr")?.Value<string>() ?? string.Empty;
+
+            TradeUpdate?.Invoke(this, new TradeUpdatedEvent
+            {
+                MarketId = marketId,
+                DateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp),
+                Price = price,
+                Volume = volume,
+                Trend = trend
+            });
+        }
     }
 }
