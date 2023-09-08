@@ -15,7 +15,7 @@ public sealed partial class MaxDataClient
     public bool IsConnected => _websocketClient.IsRunning;
 
     public MaxDataClient(
-        string id,
+        string id = "",
         int keepAliveInterval = 30,
         int reconnectTimeout = 30,
         int errorReconnectTimeout = 30)
@@ -66,13 +66,15 @@ public sealed partial class MaxDataClient
         await _websocketClient.Stop(WebSocketCloseStatus.NormalClosure, "Called CloseConnectionAsync().");
     }
 
-    private void OnDisconnectionHappened(DisconnectionInfo info)
-    {
-        throw new NotImplementedException();
-    }
-
     private void OnReconnectingHappened(ReconnectionInfo info)
     {
-        throw new NotImplementedException();
+        Console.WriteLine($"Reconnection happened, type: {info.Type}, url: {_websocketClient.Url}");
+
     }
+
+    private void OnDisconnectionHappened(DisconnectionInfo info)
+    {
+        Console.WriteLine($"Disconnection happened, type: {info.Type}");
+    }
+
 }
