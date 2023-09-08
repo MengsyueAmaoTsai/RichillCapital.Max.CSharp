@@ -25,34 +25,78 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            
-            <Button Grid.Row="0"  Grid.Column="0" Content="Connect" 
-                    Command="{Binding EstablishConnectionCommand}"/>
 
-            <DataGrid
-                Grid.Row="0" Grid.Column="1"
-                AutoGenerateColumns="False" 
-                x:Name="TimeAndSales"
-                IsReadOnly="True" 
-                SelectionMode="Single"
-                ScrollViewer.CanContentScroll="True"
-                ScrollViewer.VerticalScrollBarVisibility="Auto"
+            <Grid Grid.Row="0"  Grid.Column="0">
+                <!--<Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>-->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="5*"/>
+                </Grid.RowDefinitions>
+                
+                <Button Grid.Row="0" Grid.Column="0"  Content="Connect" 
+                        Command="{Binding EstablishConnectionCommand}"/>
+                <DataGrid
+                    Grid.Row="1" Grid.Column="0"
+                    x:Name="Watchlist"
+                    AutoGenerateColumns="False"
+                    IsReadOnly="True"
+                    SelectionMode="Single"
+                    ItemsSource="{Binding Markets}"
+                    SelectedItem="{Binding SelectedMarket}"
+                    >
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Header="Symbol"
+                            Binding="{Binding Id}"
+                            Width="auto"
+                            />
+                        <DataGridTextColumn
+                            Header="Description"
+                            Binding="{Binding Name}"
+                            Width="auto"
+                            />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+            <Grid Grid.Row="0" Grid.Column="1"
                 >
-                <DataGrid.Columns>
-                    <DataGridTextColumn
-                        Header="Time"
-                        Width="auto" 
-                        />
-                    <DataGridTextColumn
-                        Header="Price"
-                        Width="auto" 
-                        />
-                    <DataGridTextColumn
-                        Header="Volume"
-                        Width="auto" 
-                        />
-                </DataGrid.Columns>
-            </DataGrid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="5*"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" FontSize="16"
+                       Content="{Binding SelectedMarket.Id}"/>
+                <DataGrid
+                     Grid.Row="1" Grid.Column="0"
+                     AutoGenerateColumns="False" 
+                     x:Name="TimeAndSales"
+                     IsReadOnly="True" 
+                     SelectionMode="Single"
+                     ScrollViewer.CanContentScroll="True"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     >      
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Header="Time"
+                            Width="auto" 
+                            />
+                        <DataGridTextColumn
+                            Header="Price"
+                            Width="auto" 
+                            />
+                        <DataGridTextColumn
+                            Header="Volume"
+                            Width="auto" 
+                            />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+           
         </Grid>
         
         <DataGrid
