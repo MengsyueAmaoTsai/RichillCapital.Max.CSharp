@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using Newtonsoft.Json.Linq;
 
 using RichillCapital.Max.Events;
+using RichillCapital.Max.Models;
 
 using Websocket.Client;
 
@@ -168,8 +169,10 @@ public sealed partial class MaxDataClient
         if (IsConnected)
             return;
         // Get server time to check rest server is alive.
+        var serverTime = await GetServerTimeAsync();
 
-        // handle if not alive.
+        if (serverTime is null)
+            return;
 
         await _websocketClient.Start();
     }
@@ -181,14 +184,21 @@ public sealed partial class MaxDataClient
         await _websocketClient.Stop(WebSocketCloseStatus.NormalClosure, "Called CloseConnectionAsync().");
     }
 
-    public async Task GetServerTimeAsync()
+    public async Task<DateTimeOffset?> GetServerTimeAsync()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "/api/v2/timestamp");
         var response = await _httpClient.SendAsync(request);
+        var content = await response.Content.ReadAsStringAsync();
+        return DateTimeOffset.FromUnixTimeSeconds(long.Parse(content));
     }
 
-    public async Task GetMarketsAsync()
+    public async Task<IReadOnlyCollection<MarketResponse>> GetMarketsAsync()
     {
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/v2/timestamp");
+        var response = await _httpClient.SendAsync(request);
+        var content = await response.Content.ReadAsStringAsync();
+        var markets = JsonConvert.DeserializeObject<IEnumerable<MarketResponse>>(content) ?? new List<MarketResponse>();
+        return markets.ToList().AsReadOnly();
     }
 
     public void Ping()
