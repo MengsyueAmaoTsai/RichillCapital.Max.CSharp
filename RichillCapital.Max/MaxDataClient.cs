@@ -98,6 +98,38 @@ public sealed class MaxDataClient
         _websocketClient.Send(JsonConvert.SerializeObject(request));
     }
 
+    public void SubscribeTrade(string marketId)
+    {
+        if (!IsConnected) return;
+
+        var request = new
+        {
+            Id,
+            Action = "sub",
+            Subscriptions = new object[]
+            {
+                new { Channel = "trade", Market = marketId }
+            },
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
+    }
+
+    public void UnsubscribeTrade(string marketId)
+    {
+        if (!IsConnected) return;
+
+        var request = new
+        {
+            Id,
+            Action = "unsub",
+            Subscriptions = new object[]
+            {
+                new { Channel = "trade", Market = marketId }
+            },
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
+    }
+
     public async Task<DateTimeOffset> GetServerTimeAsync()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "api/v2/timestamp");
@@ -195,15 +227,28 @@ public sealed class MaxDataClient
         // Subscribe market status snapshot.
         _websocketClient.MessageReceived
             .Where(message => !string.IsNullOrEmpty(message.Text) &&
-                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "snapshot" &&
-                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "market_status")
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "market_status" &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "snapshot")
             .Subscribe(message => Console.WriteLine($"MarketStatusSnapshot => {message.Text}"));
 
         _websocketClient.MessageReceived
             .Where(message => !string.IsNullOrEmpty(message.Text) &&
-                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "update" &&
-                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "market_status")
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "market_status" &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "update")
             .Subscribe(message => Console.WriteLine($"MarketStatus update => {message.Text}"));
+
+        // subscribe trade message
+        _websocketClient.MessageReceived
+            .Where(message => !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "trade" &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "snapshot")
+            .Subscribe(message => Console.WriteLine($"Trade snapshot => {message.Text}"));
+
+        _websocketClient.MessageReceived
+            .Where(message => !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "trade" &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "update")
+            .Subscribe(message => Console.WriteLine($"Trade update => {message.Text}"));
 
     }
 
