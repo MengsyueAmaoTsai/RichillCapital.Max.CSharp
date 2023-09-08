@@ -6,7 +6,7 @@ using System.Reflection;
 
 using Newtonsoft.Json.Linq;
 
-using RichillCapital.Max.Models;
+using RichillCapital.Max.Events;
 
 using Websocket.Client;
 
@@ -22,6 +22,7 @@ public sealed partial class MaxDataClient
     public bool IsConnected => _websocketClient.IsRunning;
 
     public event EventHandler<PongEvent>? Pong;
+    public event EventHandler<ErrorEvent>? Error;
 
     public MaxDataClient(
         string id = "",
@@ -60,6 +61,11 @@ public sealed partial class MaxDataClient
                 !string.IsNullOrEmpty(message.Text) &&
                 JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "pong")
             .Subscribe(OnPongMessage);
+        _websocketClient.MessageReceived
+            .Where(message =>
+                !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text)?.SelectToken("e")?.Value<string>() == "error")
+            .Subscribe(OnErrorMessage);
     }
 
     public async Task EstablishConnectionAsync()
@@ -132,7 +138,6 @@ public sealed partial class MaxDataClient
 
     private void OnPongMessage(ResponseMessage message)
     {
-        Console.WriteLine($"{message.Text}");
         if (string.IsNullOrEmpty(message.Text)) return;
 
         var @event = JsonConvert.DeserializeObject<PongEvent>(message.Text);
@@ -140,5 +145,16 @@ public sealed partial class MaxDataClient
         if (@event is null) return;
 
         Pong?.Invoke(this, @event);
+    }
+
+    private void OnErrorMessage(ResponseMessage message)
+    {
+        if (string.IsNullOrEmpty(message.Text)) return;
+
+        var @event = JsonConvert.DeserializeObject<ErrorEvent>(message.Text);
+
+        if (@event is null) return;
+
+        Error?.Invoke(this, @event);
     }
 }

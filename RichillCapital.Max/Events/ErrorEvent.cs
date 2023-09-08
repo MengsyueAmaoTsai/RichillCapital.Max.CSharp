@@ -3,8 +3,11 @@ using RichillCapital.Max.Serialization;
 
 namespace RichillCapital.Max.Events;
 
-public sealed record PongEvent
+public sealed record ErrorEvent
 {
+    [JsonProperty("E")]
+    public string[] Errors { get; init; } = Array.Empty<string>();
+
     [JsonProperty("i")]
     public string ClientId { get; init; } = string.Empty;
 

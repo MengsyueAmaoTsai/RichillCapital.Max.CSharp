@@ -1,10 +1,12 @@
 ﻿
 
 using RichillCapital.Max;
-using RichillCapital.Max.Models;
+using RichillCapital.Max.Events;
 
 MaxDataClient dataClient = new();
 dataClient.Pong += HandlePong;
+dataClient.Error += HandleError;
+
 
 
 Console.WriteLine("|====================================|");
@@ -30,7 +32,5 @@ Console.WriteLine("|              Stopped               |");
 Console.WriteLine("|====================================|");
 
 
-static void HandlePong(object? sender, PongEvent e)
-{
-    Console.WriteLine($"Pong from server - {e}");
-}
+static void HandlePong(object? sender, PongEvent e) => Console.WriteLine($"Pong from server - {e}");
+static void HandleError(object? sender, ErrorEvent e) => Console.WriteLine($"Error from server - {e}");
