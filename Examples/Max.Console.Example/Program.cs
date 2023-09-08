@@ -38,7 +38,7 @@ await Task.Delay(2000);
 
 foreach (var symbol in testSymbols)
 {
-    // dataClient.SubscribeTrade(symbol);
+    dataClient.SubscribeTrade(symbol);
     // dataClient.SubscribeTicker(symbol);
     // dataClient.SubscribeKLine(symbol);
     // dataClient.SubscribeOrderbook(symbol);

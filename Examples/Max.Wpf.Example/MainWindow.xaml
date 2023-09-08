@@ -41,14 +41,61 @@
         
         <!--Watchlist-->
         <Grid Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
-              Background="Black" x:Name="Watchlist"
+              x:Name="Watchlist"
               >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="8*"/>
+            </Grid.RowDefinitions>
+            <TextBox Grid.Row="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                     FontSize="20" FontWeight="Heavy" Background="#16161e" Foreground="#f8f8f9"
+                     Text="{
+                        Binding SelectedMarket.Id, 
+                        Mode=TwoWay, 
+                        UpdateSourceTrigger=PropertyChanged
+                     }"
+                     IsReadOnly="True"
+                     />
+            <DataGrid Grid.Row="1"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      ScrollViewer.CanContentScroll="True"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      SelectedItem="{Binding SelectedMarket}"
+                      ItemsSource="{Binding Markets}"
+                      >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Symbol" Width="auto" Binding="{Binding Id}"/>
+                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Name}"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
         
         <!--Time&Sales-->
         <Grid Grid.Row="3" Grid.Column="0" Grid.RowSpan="2"
-              Background="Yellow" x:Name="TimeAndSales"
+              Background="#16161e" x:Name="TimeAndSales"
               >
+            <DataGrid
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                SelectionMode="Extended"
+                ScrollViewer.CanContentScroll="True"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"   
+                ItemsSource="{Binding DisplayTrades}"
+                >
+                <DataGrid.Columns>
+                    <DataGridTextColumn 
+                        Header="Time" Width="1*"
+                        Binding="{Binding Time, StringFormat={}{0:HH:mm:ss.fff}}"/>
+                    <DataGridTextColumn 
+                        Header="Price" Width="1*"
+                        Binding="{Binding Price}"/>
+                    <DataGridTextColumn 
+                        Header="Volume" Width="1*"
+                        Binding="{Binding Volume}"/>
+                </DataGrid.Columns>
+            </DataGrid>              
         </Grid>
         
         <!--Orderbook-->
@@ -72,7 +119,6 @@
         <!--LogConsole-->
         <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="5" Grid.RowSpan="2">
             <DataGrid x:Name="LogConsole" 
-                      Background="#16161e" 
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
                       SelectionMode="Single"
