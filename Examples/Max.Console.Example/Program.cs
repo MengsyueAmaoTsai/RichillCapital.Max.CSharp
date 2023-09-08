@@ -17,9 +17,8 @@ Console.WriteLine();
 
 await dataClient.EstablishConnectionAsync();
 
-await Task.Delay(2000);
-
-await dataClient.CloseConnectionAsync();
+// await Task.Delay(2000);
+// await dataClient.CloseConnectionAsync();
 
 Console.ReadKey();
 Console.WriteLine("|====================================|");
