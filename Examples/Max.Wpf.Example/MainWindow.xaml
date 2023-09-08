@@ -34,7 +34,8 @@
         <!--Menu-->
         <Menu VerticalAlignment="Center" FontSize="15" Margin="5" Background="#16161e" Foreground="#f8f8f9">
             <MenuItem Header="System">
-                <MenuItem Header="Connect"/>
+                <MenuItem Header="Connect" 
+                          Command="{Binding EstablishConnectionCommand}"/>
             </MenuItem>
         </Menu>
         
@@ -73,12 +74,23 @@
             <DataGrid x:Name="LogConsole" 
                       Background="#16161e" 
                       AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      ScrollViewer.CanContentScroll="True"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      LayoutUpdated="LogConsole_LayoutUpdated"
                       ItemsSource="{Binding Logs}"
                       >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Date Time" Width="auto"/>
-                    <DataGridTextColumn Header="Level" Width="auto"/>
-                    <DataGridTextColumn Header="Message" Width="*"/>
+                    <DataGridTextColumn 
+                        Header="Date Time" Width="auto" 
+                        Binding="{Binding DateTime, StringFormat={}{0:yyyy-MM-dd HH:mm:ss.fff}}"/>
+                    <DataGridTextColumn 
+                        Header="Level" Width="auto"
+                        Binding="{Binding Level}"/>
+                    <DataGridTextColumn 
+                        Header="Message" Width="*"
+                        Binding="{Binding Message}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

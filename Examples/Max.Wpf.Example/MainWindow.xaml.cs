@@ -27,7 +27,7 @@ public partial class MainWindow : Window
         if (!_viewModel.ShouldAutoScroll || !items.Any())
             return;
 
-        //LogConsole.ScrollIntoView(items[^1]);
+        LogConsole.ScrollIntoView(items[^1]);
         _viewModel.ShouldAutoScroll = false;
     }
 }
