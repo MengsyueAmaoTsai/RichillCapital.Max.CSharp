@@ -32,6 +32,7 @@ public sealed class MaxDataClient
             ReconnectTimeout = TimeSpan.FromSeconds(reconnectTimeout),
             ErrorReconnectTimeout = TimeSpan.FromSeconds(reconnectTimeout),
         };
+
         Id = clientId;
     }
 
@@ -50,6 +51,16 @@ public sealed class MaxDataClient
 
         Console.WriteLine($"{Id} Disconnecting from server...");
         await _websocketClient.StopOrFail(WebSocketCloseStatus.NormalClosure, WebSocketCloseStatus.NormalClosure.ToString());
+    }
+
+    public void Ping()
+    {
+        var request = new
+        {
+            Id,
+            Action = "ping"
+        };
+        _websocketClient.Send(JsonConvert.SerializeObject(request));
     }
 
     public void SubscribeMarketStatus()
