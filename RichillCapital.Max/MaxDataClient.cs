@@ -40,7 +40,7 @@ public sealed class MaxDataClient
         };
         _websocketClient = new WebsocketClient(new Uri("wss://max-stream.maicoin.com/ws"))
         {
-            Name = string.IsNullOrEmpty(clientId) ? clientId : Assembly.GetExecutingAssembly().GetName().Name,
+            Name = string.IsNullOrEmpty(clientId) ? typeof(MaxDataClient).Assembly.GetName().Name : clientId,
             IsReconnectionEnabled = true,
             ReconnectTimeout = TimeSpan.FromSeconds(reconnectTimeout),
             ErrorReconnectTimeout = TimeSpan.FromSeconds(reconnectTimeout),
