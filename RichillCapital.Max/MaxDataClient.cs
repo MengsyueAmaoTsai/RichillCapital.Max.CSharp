@@ -239,7 +239,7 @@ public sealed class MaxDataClient
             }
         });
 
-        // Subscribe market status snapshot.
+        // TODO: Subscribe market status snapshot.
         _websocketClient.MessageReceived
             .Where(message => !string.IsNullOrEmpty(message.Text) &&
                 JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "market_status" &&
@@ -264,6 +264,45 @@ public sealed class MaxDataClient
                 JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "trade" &&
                 JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "update")
             .Subscribe(HandleTradeUpdateMessage);
+
+        // TODO: Subscribe k line
+        _websocketClient.MessageReceived
+            .Where(message => !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "kline" &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "snapshot")
+            .Subscribe(message => Console.WriteLine($"kline snapshot => {message.Text}"));
+
+        _websocketClient.MessageReceived
+            .Where(message => !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "kline" &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "update")
+            .Subscribe(message => Console.WriteLine($"kline update => {message.Text}"));
+
+        // TODO: Subscribe orderbook
+        _websocketClient.MessageReceived
+            .Where(message => !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "book" &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "snapshot")
+            .Subscribe(message => Console.WriteLine($"book snapshot => {message.Text}"));
+
+        _websocketClient.MessageReceived
+            .Where(message => !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "book" &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "update")
+            .Subscribe(message => Console.WriteLine($"book update => {message.Text}"));
+
+        // TODO: Subscribe ticker
+        _websocketClient.MessageReceived
+            .Where(message => !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "ticker" &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "snapshot")
+            .Subscribe(message => Console.WriteLine($"ticker snapshot => {message.Text}"));
+
+        _websocketClient.MessageReceived
+            .Where(message => !string.IsNullOrEmpty(message.Text) &&
+                JObject.Parse(message.Text).SelectToken("c")?.Value<string>() == "ticker" &&
+                JObject.Parse(message.Text).SelectToken("e")?.Value<string>() == "update")
+            .Subscribe(message => Console.WriteLine($"ticker update => {message.Text}"));
 
     }
 
