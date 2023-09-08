@@ -12,11 +12,24 @@ namespace RichillCapital.Max;
 
 public sealed class MaxDataClient
 {
+    private readonly HttpClient _httpClient;
+    private readonly WebsocketClient _websocketClient;
+
     public string Id { get; private set; }
     public bool IsConnected { get; private set; } = false;
 
-    private readonly HttpClient _httpClient;
-    private readonly WebsocketClient _websocketClient;
+    public event EventHandler? Connected;
+    public event EventHandler? Disconnect;
+    public event EventHandler? MarketStatusUpdate;
+    public event EventHandler? MarketStatusSnapshot;
+    public event EventHandler? TradeUpdate;
+    public event EventHandler? TradeSnapshot;
+    public event EventHandler? TickerUpdate;
+    public event EventHandler? TickerSnapshot;
+    public event EventHandler? KLineUpdate;
+    public event EventHandler? KLineSnapshot;
+    public event EventHandler? OrderbookUpdate;
+    public event EventHandler? OrderbookSnapshot;
 
     public MaxDataClient(string clientId = "", int reconnectTimeout = 30)
     {
@@ -195,6 +208,7 @@ public sealed class MaxDataClient
                 default:
                     break;
             }
+            Connected?.Invoke(this, new EventArgs());
         });
 
         _websocketClient.DisconnectionHappened.Subscribe(info =>
