@@ -25,9 +25,13 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private MarketResponse? _selectedMarket = null;
 
-    public ObservableCollection<Log> Logs { get; }
-    public ObservableCollection<MarketResponse> Markets { get; }
-    public ObservableCollection<Trade> DisplayTrades { get; }
+    public ObservableCollection<Log> Logs { get; } = new();
+    public ObservableCollection<MarketResponse> Markets { get; } = new();
+    public ObservableCollection<Trade> DisplayTrades { get; } = new();
+    public ObservableCollection<Order> Orders { get; } = new();
+    public ObservableCollection<Execution> Executions { get; } = new();
+    public ObservableCollection<Position> Positions { get; } = new();
+    public ObservableCollection<MyTrade> MyTrades { get; } = new();
 
     public bool ShouldAutoScroll { get; set; }
 
@@ -37,12 +41,13 @@ public sealed partial class MainViewModel : ObservableObject
         _dataClient.Pong += _dataClient_Pong;
         _dataClient.TradeUpdated += _dataClient_TradeUpdated;
 
-        Logs = new();
         BindingOperations.EnableCollectionSynchronization(Logs, new());
-        Markets = new();
         BindingOperations.EnableCollectionSynchronization(Markets, new());
-        DisplayTrades = new();
         BindingOperations.EnableCollectionSynchronization(DisplayTrades, new());
+        BindingOperations.EnableCollectionSynchronization(Orders, new());
+        BindingOperations.EnableCollectionSynchronization(Executions, new());
+        BindingOperations.EnableCollectionSynchronization(Positions, new());
+        BindingOperations.EnableCollectionSynchronization(MyTrades, new());
     }
 
     private void _dataClient_TradeUpdated(object? sender, TradeEvent e)
@@ -62,10 +67,7 @@ public sealed partial class MainViewModel : ObservableObject
             };
             _tradeCache[symbol].Add(trade);
 
-            if (SelectedMarket is not null && SelectedMarket.Id == symbol)
-            {
-                DisplayTrades.Add(trade);
-            }
+            if (SelectedMarket is not null && SelectedMarket.Id == symbol) DisplayTrades.Add(trade);
         }
     }
 
