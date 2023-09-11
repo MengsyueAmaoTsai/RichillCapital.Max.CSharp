@@ -10,8 +10,6 @@
         Height="450" 
         Width="800"
         WindowStartupLocation="CenterScreen"
-        Background="#16161e"
-        Foreground="#f8f8f9"
         >
     <Grid>
         <Grid.ColumnDefinitions>
@@ -112,8 +110,75 @@
         </Grid>        
         <!--TradePanel-->
         <Grid Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="2" 
-              Background="Red" x:Name="TradingPanel"
+              x:Name="TradingPanel"
               >
+            <TabControl>
+                <TabItem Header="Orders">
+                    <DataGrid>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id"/>
+                            <DataGridTextColumn Header="Date Time"/>
+                            <DataGridTextColumn Header="Trade Type"/>
+                            <DataGridTextColumn Header="Order Type"/>
+                            <DataGridTextColumn Header="Symbol"/>
+                            <DataGridTextColumn Header="Quantity"/>
+                            <DataGridTextColumn Header="Price"/>
+                            <DataGridTextColumn Header="Time In Force"/>
+                            <DataGridTextColumn Header="Status"/>
+                            <DataGridTextColumn Header="Account"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+
+                <TabItem Header="Executions">
+                    <DataGrid>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id"/>
+                            <DataGridTextColumn Header="Trade Type"/>
+                            <DataGridTextColumn Header="Symbol"/>
+                            <DataGridTextColumn Header="Quantity"/>
+                            <DataGridTextColumn Header="Avg. Price"/>
+                            <DataGridTextColumn Header="Date Time"/>
+                            <DataGridTextColumn Header="Commission"/>
+                            <DataGridTextColumn Header="Tax"/>
+                            <DataGridTextColumn Header="Order Id"/>
+                            <DataGridTextColumn Header="Account"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+
+                <TabItem Header="Positions">
+                    <DataGrid>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id"/>
+                            <DataGridTextColumn Header="Symbol"/>
+                            <DataGridTextColumn Header="Side"/>
+                            <DataGridTextColumn Header="Quantity"/>
+                            <DataGridTextColumn Header="Avg. Price"/>
+                            <DataGridTextColumn Header="Unl. Pnl"/>
+                            <DataGridTextColumn Header="Opened At"/>
+                            <DataGridTextColumn Header="Account"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+
+                <TabItem Header="Trades">
+                    <DataGrid>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id"/>
+                            <DataGridTextColumn Header="Side"/>
+                            <DataGridTextColumn Header="Symbol"/>
+                            <DataGridTextColumn Header="Quantity"/>
+                            <DataGridTextColumn Header="Entry Time"/>
+                            <DataGridTextColumn Header="Entry Price"/>
+                            <DataGridTextColumn Header="Exit Time"/>
+                            <DataGridTextColumn Header="Exit Price"/>
+                            <DataGridTextColumn Header="Pnl"/>
+                            <DataGridTextColumn Header="Account"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
         </Grid>
         
         <!--LogConsole-->
