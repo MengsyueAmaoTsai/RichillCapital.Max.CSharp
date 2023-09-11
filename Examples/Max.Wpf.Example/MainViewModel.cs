@@ -33,6 +33,7 @@ public sealed partial class MainViewModel : ObservableObject
     public ObservableCollection<Position> Positions { get; } = new();
     public ObservableCollection<MyTrade> MyTrades { get; } = new();
 
+    public Dictionary<string, string> OrderBooks = new();
     public bool ShouldAutoScroll { get; set; }
 
     public MainViewModel(MaxDataClient dataClient)
@@ -40,6 +41,8 @@ public sealed partial class MainViewModel : ObservableObject
         _dataClient = dataClient;
         _dataClient.Pong += _dataClient_Pong;
         _dataClient.TradeUpdated += _dataClient_TradeUpdated;
+        _dataClient.OrderbookSnapshot += _dataClient_OrderbookSnapshot;
+        _dataClient.OrderbookUpdated += _dataClient_OrderbookUpdated;
 
         BindingOperations.EnableCollectionSynchronization(Logs, new());
         BindingOperations.EnableCollectionSynchronization(Markets, new());
@@ -48,6 +51,22 @@ public sealed partial class MainViewModel : ObservableObject
         BindingOperations.EnableCollectionSynchronization(Executions, new());
         BindingOperations.EnableCollectionSynchronization(Positions, new());
         BindingOperations.EnableCollectionSynchronization(MyTrades, new());
+    }
+
+    private void _dataClient_OrderbookUpdated(object? sender, OrderbookEvent e)
+    {
+        if (!OrderBooks.ContainsKey(e.MarketId))
+            OrderBooks.Add(e.MarketId, e.MarketId);
+        else
+            OrderBooks[e.MarketId] = e.MarketId;
+    }
+
+    private void _dataClient_OrderbookSnapshot(object? sender, OrderbookEvent e)
+    {
+        if (!OrderBooks.ContainsKey(e.MarketId))
+            OrderBooks.Add(e.MarketId, e.MarketId);
+        else 
+            OrderBooks[e.MarketId] = e.MarketId;
     }
 
     private void _dataClient_TradeUpdated(object? sender, TradeEvent e)
@@ -113,12 +132,14 @@ public sealed partial class MainViewModel : ObservableObject
         ShouldAutoScroll = true;
     }
 
-    private void SubscribeAllMarketData()
+    private async void SubscribeAllMarketData()
     {
         foreach (var market in Markets)
         {
-            AddLog(Log.Info($"Subscribe to {market.Id}..."));
+            AddLog(Log.Info($"Subscribe to market data of {market.Id}"));
             _dataClient.SubscribeTrade(market.Id);
+            _dataClient.SubscribeOrderbook(market.Id);
+            await Task.Delay(250);
         }
     }
 
