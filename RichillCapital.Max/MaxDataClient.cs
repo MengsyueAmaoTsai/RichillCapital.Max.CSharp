@@ -15,7 +15,6 @@ public sealed partial class MaxDataClient
 {
     private readonly HttpClient _httpClient;
     private readonly WebsocketClient _websocketClient;
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
 
     public string Id { get; private set; }
     public bool IsConnected => _websocketClient.IsRunning;
@@ -356,26 +355,13 @@ public sealed partial class MaxDataClient
     private void OnReconnectingHappened(ReconnectionInfo info)
     {
         Console.WriteLine($"Reconnection happened, type: {info.Type}, url: {_websocketClient.Url}");
-        Task.Run(() => SendPingTask(_cancellationTokenSource.Token));
         Connected?.Invoke(this, new EventArgs());
     }
 
     private void OnDisconnectionHappened(DisconnectionInfo info)
     {
         Console.WriteLine($"Disconnection happened, type: {info.Type}");
-        _cancellationTokenSource.Cancel();
         Disconnected?.Invoke(this, new EventArgs());
-    }
-
-    private async Task SendPingTask(CancellationToken cancellationToken)
-    {
-        Console.WriteLine("Ping task started.");
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            await Task.Delay(5_000, cancellationToken);
-            Ping();
-        }
-        Console.WriteLine($"Ping task stopped.");
     }
 
     private void OnPongMessage(ResponseMessage message)
@@ -391,27 +377,41 @@ public sealed partial class MaxDataClient
 
     private void OnErrorMessage(ResponseMessage message)
     {
-        if (string.IsNullOrEmpty(message.Text)) return;
+        if (string.IsNullOrEmpty(message.Text))
+            return;
 
         var @event = JsonConvert.DeserializeObject<ErrorEvent>(message.Text);
 
-        if (@event is null) return;
+        if (@event is null)
+            return;
 
         Error?.Invoke(this, @event);
     }
 
     private void OnSubscribed(ResponseMessage message)
     {
-        if (string.IsNullOrEmpty(message.Text)) return;
-        // TODO:
-        Console.WriteLine($"Subscribed => {message.Text}");
+        if (string.IsNullOrEmpty(message.Text))
+            return;
+
+        var @event = JsonConvert.DeserializeObject<SubscribedEvent>(message.Text);
+
+        if (@event is null)
+            return;
+
+        Subscribed?.Invoke(this, @event);
     }
 
     private void OnUnsubscribed(ResponseMessage message)
     {
-        if (string.IsNullOrEmpty(message.Text)) return;
-        // TODO:
-        Console.WriteLine($"Unsubscribed => {message.Text}");
+        if (string.IsNullOrEmpty(message.Text))
+            return;
+
+        var @event = JsonConvert.DeserializeObject<UnsubscribedEvent>(message.Text);
+
+        if (@event is null)
+            return;
+
+        Unsubscribed?.Invoke(this, @event);
     }
 
     private void OnMarketStatusSnapshot(ResponseMessage message)
