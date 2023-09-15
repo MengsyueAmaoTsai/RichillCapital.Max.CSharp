@@ -41,7 +41,7 @@ public sealed partial class MaxDataClient
 
     public MaxDataClient(
         string id = "",
-        int keepAliveInterval = 30,
+        int keepAliveInterval = 15,
         int reconnectTimeout = 30,
         int errorReconnectTimeout = 30)
     {
