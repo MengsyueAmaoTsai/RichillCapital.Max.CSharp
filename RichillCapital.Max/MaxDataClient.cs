@@ -20,6 +20,9 @@ public sealed partial class MaxDataClient
     public string Id { get; private set; }
     public bool IsConnected => _websocketClient.IsRunning;
 
+    public event EventHandler<EventArgs>? Connected;
+    public event EventHandler<EventArgs>? Disconnected;
+
     public event EventHandler<PongEvent>? Pong;
     public event EventHandler<ErrorEvent>? Error;
     public event EventHandler<SubscribedEvent>? Subscribed;
@@ -354,12 +357,14 @@ public sealed partial class MaxDataClient
     {
         Console.WriteLine($"Reconnection happened, type: {info.Type}, url: {_websocketClient.Url}");
         Task.Run(() => SendPingTask(_cancellationTokenSource.Token));
+        Connected?.Invoke(this, new EventArgs());
     }
 
     private void OnDisconnectionHappened(DisconnectionInfo info)
     {
         Console.WriteLine($"Disconnection happened, type: {info.Type}");
         _cancellationTokenSource.Cancel();
+        Disconnected?.Invoke(this, new EventArgs());
     }
 
     private async Task SendPingTask(CancellationToken cancellationToken)
