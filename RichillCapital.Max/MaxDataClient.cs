@@ -377,6 +377,7 @@ public sealed partial class MaxDataClient
 
     private void OnErrorMessage(ResponseMessage message)
     {
+        Console.WriteLine($"Error => {message.Text}");
         if (string.IsNullOrEmpty(message.Text))
             return;
 

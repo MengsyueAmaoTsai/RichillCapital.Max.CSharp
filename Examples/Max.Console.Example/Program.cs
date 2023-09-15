@@ -1,7 +1,7 @@
 ﻿using RichillCapital.Max;
 using RichillCapital.Max.Events;
 
-MaxDataClient dataClient = new();
+MaxDataClient dataClient = new("Max.Console.Example");
 dataClient.Pong += HandlePong;
 dataClient.Error += HandleError;
 
@@ -34,11 +34,11 @@ await dataClient.GetServerTimeAsync();
 await dataClient.GetMarketsAsync();
 await Task.Delay(2000);
 
-// dataClient.SubscribeMarketStatus();
+dataClient.SubscribeMarketStatus();
 
 foreach (var symbol in testSymbols)
 {
-    dataClient.SubscribeTrade(symbol);
+    // dataClient.SubscribeTrade(symbol);
     // dataClient.SubscribeTicker(symbol);
     // dataClient.SubscribeKLine(symbol);
     // dataClient.SubscribeOrderbook(symbol);
