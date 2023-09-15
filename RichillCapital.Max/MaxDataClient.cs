@@ -1,6 +1,7 @@
 
 using System.Net.WebSockets;
 using System.Reactive.Linq;
+using System.Reflection;
 
 using Newtonsoft.Json.Linq;
 
@@ -44,7 +45,13 @@ public sealed partial class MaxDataClient
         int reconnectTimeout = 30,
         int errorReconnectTimeout = 30)
     {
-        Id = id;
+        string? executingAssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+        string? assemblyName = typeof(MaxDataClient).Assembly.GetName().Name;
+
+        Id = string.IsNullOrEmpty(id) ?
+            string.IsNullOrEmpty(executingAssemblyName) ?
+            string.IsNullOrEmpty(assemblyName) ?
+            "RichillCapital.Max" : assemblyName : executingAssemblyName : id;
 
         _httpClient = new HttpClient
         {
