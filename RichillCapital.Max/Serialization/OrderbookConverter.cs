@@ -16,6 +16,7 @@ public class OrderBookEventConverter : JsonConverter<OrderbookEvent>
         return new()
         {
             DateTime = DateTimeOffset.FromUnixTimeMilliseconds(timestamp),
+            MarketId = json.SelectToken("M")?.Value<string>() ?? string.Empty,
             Bids = ConvertToOrderbookEntries(json["b"]) ?? Array.Empty<OrderbookEntry>(),
             Asks = ConvertToOrderbookEntries(json["a"]) ?? Array.Empty<OrderbookEntry>()
         };
