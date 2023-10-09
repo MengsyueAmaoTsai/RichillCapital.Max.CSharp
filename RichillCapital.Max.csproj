@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>RichillCapital.Max</PackageId>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <Authors>Richill Capital</Authors>
     <Company>Richill Capital</Company>
     <Description>MAX crypto exchange API client.</Description>
