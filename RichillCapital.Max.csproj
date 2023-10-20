@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="Solution.Build.props" />
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -13,12 +13,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="dist\**" />
     <Compile Remove="Examples\**" />
     <Compile Remove="Tests\**" />
+    <EmbeddedResource Remove="dist\**" />
     <EmbeddedResource Remove="Examples\**" />
     <EmbeddedResource Remove="Tests\**" />
+    <None Remove="dist\**" />
     <None Remove="Examples\**" />
     <None Remove="Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".gitignore" />
+    <None Remove="LICENSE.md" />
+    <None Remove="README.md" />
   </ItemGroup>
 
   <ItemGroup>

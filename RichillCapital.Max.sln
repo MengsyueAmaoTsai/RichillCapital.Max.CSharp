@@ -9,9 +9,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Max.Console.Example", "Exam
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RichillCapital.Max.Tests", "Tests\RichillCapital.Max.Tests\RichillCapital.Max.Tests.csproj", "{F44AC60A-F9F2-4A1A-BD10-D7C4A8935019}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Max.Wpf.Example", "Examples\Max.Wpf.Example\Max.Wpf.Example.csproj", "{4352EFFC-D0FE-4F6D-B60A-8CF304D120C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Max.Wpf.Example", "Examples\Max.Wpf.Example\Max.Wpf.Example.csproj", "{4352EFFC-D0FE-4F6D-B60A-8CF304D120C0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{A05717D5-DAFF-4E4C-BE92-3055409754F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{741A8941-1714-483B-8982-C935229AB4FF}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+		Solution.Build.props = Solution.Build.props
+		stylecop.json = stylecop.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
