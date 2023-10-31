@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="Solution.Build.props" />
+  
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -28,6 +29,7 @@
     <None Remove=".gitignore" />
     <None Remove="LICENSE.md" />
     <None Remove="README.md" />
+    <None Remove="Solution.Build.props" />
   </ItemGroup>
 
   <ItemGroup>

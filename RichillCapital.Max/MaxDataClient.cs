@@ -496,9 +496,18 @@ public sealed partial class MaxDataClient
 
     private void OnOrderbookUpdate(ResponseMessage message)
     {
-        if (string.IsNullOrEmpty(message.Text)) return;
+        if (string.IsNullOrEmpty(message.Text))
+        {
+            return;
+        }
+
         var @event = JsonConvert.DeserializeObject<OrderbookEvent>(message.Text);
-        if (@event is null) return;
+
+        if (@event is null)
+        {
+            return;
+        }
+
         OrderbookUpdated?.Invoke(this, @event);
     }
 }
